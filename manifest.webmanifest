@@ -1,0 +1,24 @@
+{
+  "name": "Pop-Crush \u2014 Bubble Blast Mania",
+  "short_name": "Pop-Crush",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#100927",
+  "theme_color": "#120b2e",
+  "description": "A colourful bubble-matching arcade game.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

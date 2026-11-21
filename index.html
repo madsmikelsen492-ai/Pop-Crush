@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120b2e">
+<meta name="description" content="Pop-Crush: a bright, fast bubble-matching arcade game.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<title>Pop-Crush — Bubble Blast</title>
+<style>
+:root{--bg:#100927;--panel:#211447;--pink:#ff4fa3;--cyan:#36e4ff;--gold:#ffd65a;--ink:#fff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at 50% -10%,#44206f 0%,#1a1040 42%,var(--bg) 78%);display:flex;justify-content:center}
+button{font:inherit;cursor:pointer;border:0}
+.app{width:min(100%,560px);padding:18px 16px 30px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between}.brand{font-size:clamp(27px,7vw,38px);font-weight:1000;letter-spacing:-1.5px;text-shadow:0 3px 0 #6b236d}.brand span{color:var(--gold)}.tag{font-size:11px;letter-spacing:2px;color:#c9b8f6;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#281951;border:1px solid #644b9b;border-radius:15px;padding:9px 7px;text-align:center;box-shadow:0 5px 0 #0a0620}.stat small{display:block;color:#cbbce9;font-size:10px;font-weight:800;letter-spacing:1px}.stat strong{font-size:22px}
+.gamebox{background:linear-gradient(145deg,#291958,#171039);border:1px solid #7053aa;border-radius:22px;padding:12px;box-shadow:0 12px 30px #05031388}
+#board{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;touch-action:manipulation}
+.bubble{aspect-ratio:1;border-radius:50%;position:relative;box-shadow:inset -5px -7px 0 #0002,inset 3px 4px 0 #fff7,0 3px 0 #08041d;transition:transform .12s,filter .12s}
+.bubble:after{content:"";position:absolute;width:25%;height:13%;border-radius:50%;background:#fff9;top:17%;left:23%;transform:rotate(-35deg)}
+.bubble:active{transform:scale(.88)}.bubble.selected{outline:3px solid white;outline-offset:2px;transform:scale(.92)}
+.c0{background:linear-gradient(145deg,#ff83b9,#ed287c)}.c1{background:linear-gradient(145deg,#7ef4ff,#13a9dc)}.c2{background:linear-gradient(145deg,#ffe98a,#ff9b28)}.c3{background:linear-gradient(145deg,#c9a0ff,#8050e8)}.c4{background:linear-gradient(145deg,#9bffb5,#20bd79)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn{border-radius:14px;padding:13px 10px;font-weight:900;color:#24123d;background:linear-gradient(180deg,#fff17d,#ffbd42);box-shadow:0 4px 0 #a65c20}.btn.secondary{background:linear-gradient(180deg,#75f2ff,#2ebcde);box-shadow:0 4px 0 #16769a}.btn:disabled{opacity:.45;filter:grayscale(1)}
+.message{min-height:25px;text-align:center;color:#e7d9ff;font-size:13px;font-weight:700}
+.overlay{position:fixed;inset:0;background:#080418dd;display:grid;place-items:center;padding:20px;z-index:5}.modal{width:min(100%,420px);padding:28px 22px;border-radius:25px;text-align:center;background:linear-gradient(145deg,#39206c,#1b103d);border:1px solid #9471d1;box-shadow:0 20px 60px #0009}.modal h1{font-size:36px;margin:0 0 5px}.modal p{color:#e0d4f9;line-height:1.5}.modal .btn{width:100%;margin-top:10px;font-size:17px}.hidden{display:none!important}.hint{font-size:11px;color:#c1b2e2;text-align:center}
+@media(max-width:360px){#board{gap:4px}.app{padding:12px 10px}.stat strong{font-size:19px}}
+</style>
+</head>
+<body>
+<main class="app">
+ <header class="top"><div><div class="brand">POP<span>✦</span>CRUSH</div><div class="tag">BUBBLE BLAST MANIA</div></div><div class="tag">ARCADE MODE</div></header>
+ <section class="stats">
+  <div class="stat"><small>SCORE</small><strong id="score">0</strong></div>
+  <div class="stat"><small>MOVES</small><strong id="moves">25</strong></div>
+  <div class="stat"><small>BEST</small><strong id="best">0</strong></div>
+ </section>
+ <section class="gamebox"><div id="board" aria-label="Game board"></div></section>
+ <div class="message" id="message">Tap a group of 2 or more matching bubbles to pop them!</div>
+ <section class="controls">
+  <button class="btn secondary" id="rainbow">🌈 Rainbow Pop · 3</button>
+  <button class="btn" id="mega">💥 Mega Pop · 2</button>
+ </section>
+ <div class="hint">Match bigger groups for bigger points · Clear the board to earn a bonus</div>
+</main>
+<div class="overlay" id="welcome">
+ <div class="modal"><div style="font-size:52px">🫧✨</div><h1>POP-CRUSH</h1><p>Ready for a bubble-blasting challenge? Pop matching clusters, trigger power-ups and chase your high score!</p><p><b>How to play:</b> Tap any connected group of 2+ same-colour bubbles. Bigger groups score more.</p><button class="btn" id="play">PLAY NOW</button></div>
+</div>
+<div class="overlay hidden" id="end">
+ <div class="modal"><div style="font-size:48px">🏆</div><h1 id="endtitle">Great popping!</h1><p id="endtext"></p><button class="btn" id="again">PLAY AGAIN</button></div>
+</div>
+<script>
+const W=8,H=8,colors=5;let grid=[],score=0,moves=25,rainbows=3,megas=2,best=+(localStorage.pcBest||0),busy=false;
+const $=id=>document.getElementById(id),rand=()=>Math.floor(Math.random()*colors);
+function fresh(){grid=Array.from({length:H},()=>Array.from({length:W},rand));score=0;moves=25;rainbows=3;megas=2;busy=false;update();draw();$('message').textContent='Find a cluster of matching bubbles!';}
+function update(){$('score').textContent=score;$('moves').textContent=moves;$('best').textContent=best;$('rainbow').textContent=`🌈 Rainbow Pop · ${rainbows}`;$('mega').textContent=`💥 Mega Pop · ${megas}`;$('rainbow').disabled=rainbows<=0||busy;$('mega').disabled=megas<=0||busy;}
+function draw(){const b=$('board');b.innerHTML='';grid.forEach((row,r)=>row.forEach((v,c)=>{let el=document.createElement('button');el.className='bubble '+(v===null?'':'c'+v);el.setAttribute('aria-label',v===null?'Empty':`Colour ${v+1}`);el.disabled=v===null||busy;el.addEventListener('click',()=>tap(r,c));b.appendChild(el)}));}
+function group(r,c){let color=grid[r][c];if(color===null)return[];let stack=[[r,c]],seen=new Set([r*W+c]),out=[];while(stack.length){let [y,x]=stack.pop();out.push([y,x]);for(let [dy,dx] of [[1,0],[-1,0],[0,1],[0,-1]]){let ny=y+dy,nx=x+dx,k=ny*W+nx;if(ny>=0&&ny<H&&nx>=0&&nx<W&&!seen.has(k)&&grid[ny][nx]===color){seen.add(k);stack.push([ny,nx])}}}return out}
+function tap(r,c){if(busy)return;let g=group(r,c);if(g.length<2){$('message').textContent='Choose a group of at least 2 matching bubbles.';return}pop(g,`Nice! ${g.length} bubbles popped.`)}
+function pop(cells,msg){cells.forEach(([r,c])=>grid[r][c]=null);score+=cells.length*cells.length*10;moves--;settle();if(score>best){best=score;localStorage.pcBest=best}update();draw();$('message').textContent=msg;if(moves<=0||grid.every(row=>row.every(v=>v===null))){if(grid.every(row=>row.every(v=>v===null)))score+=500;setTimeout(finish,250)}}
+function settle(){for(let c=0;c<W;c++){let vals=[];for(let r=H-1;r>=0;r--)if(grid[r][c]!==null)vals.push(grid[r][c]);for(let r=H-1,i=0;r>=0;r--,i++)grid[r][c]=vals[i]??null}let keep=[];for(let c=0;c<W;c++)if(grid.some(row=>row[c]!==null))keep.push(grid.map(row=>row[c]));grid=Array.from({length:H},(_,r)=>Array.from({length:W},(_,c)=>keep[c]?.[r]??null))}
+$('rainbow').onclick=()=>{if(!rainbows||busy)return;let counts=Array(colors).fill(0);grid.flat().forEach(v=>{if(v!==null)counts[v]++});let target=counts.indexOf(Math.max(...counts));let cells=[];grid.forEach((row,r)=>row.forEach((v,c)=>{if(v===target)cells.push([r,c])}));rainbows--;pop(cells,'🌈 Rainbow Pop! The most common colour is gone!')};
+$('mega').onclick=()=>{if(!megas||busy)return;let r=Math.floor(Math.random()*H),c=Math.floor(Math.random()*W),cells=[];for(let y=Math.max(0,r-1);y<=Math.min(H-1,r+1);y++)for(let x=Math.max(0,c-1);x<=Math.min(W-1,c+1);x++)if(grid[y][x]!==null)cells.push([y,x]);megas--;pop(cells,'💥 Mega Pop! A 3×3 area blasted away!')};
+function finish(){$('endtitle').textContent=score>=best?'New high score!':'Game over!';$('endtext').textContent=`You scored ${score.toLocaleString()} points. Best score: ${best.toLocaleString()}.`; $('end').classList.remove('hidden')}
+$('play').onclick=()=>{$('welcome').classList.add('hidden');fresh()};$('again').onclick=()=>{$('end').classList.add('hidden');fresh()};$('best').textContent=best;draw();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
