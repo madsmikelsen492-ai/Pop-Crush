@@ -1,68 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#120b2e">
-<meta name="description" content="Pop-Crush: a bright, fast bubble-matching arcade game.">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<title>Pop-Crush — Bubble Blast</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#10152d"><meta name="description" content="Pop-Crush: Blast Mania — pop bubbles, chain combos and collect rewards."><title>Pop-Crush: Blast Mania</title>
 <style>
-:root{--bg:#100927;--panel:#211447;--pink:#ff4fa3;--cyan:#36e4ff;--gold:#ffd65a;--ink:#fff}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at 50% -10%,#44206f 0%,#1a1040 42%,var(--bg) 78%);display:flex;justify-content:center}
-button{font:inherit;cursor:pointer;border:0}
-.app{width:min(100%,560px);padding:18px 16px 30px;display:flex;flex-direction:column;gap:14px}
-.top{display:flex;align-items:center;justify-content:space-between}.brand{font-size:clamp(27px,7vw,38px);font-weight:1000;letter-spacing:-1.5px;text-shadow:0 3px 0 #6b236d}.brand span{color:var(--gold)}.tag{font-size:11px;letter-spacing:2px;color:#c9b8f6;font-weight:800}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#281951;border:1px solid #644b9b;border-radius:15px;padding:9px 7px;text-align:center;box-shadow:0 5px 0 #0a0620}.stat small{display:block;color:#cbbce9;font-size:10px;font-weight:800;letter-spacing:1px}.stat strong{font-size:22px}
-.gamebox{background:linear-gradient(145deg,#291958,#171039);border:1px solid #7053aa;border-radius:22px;padding:12px;box-shadow:0 12px 30px #05031388}
-#board{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;touch-action:manipulation}
-.bubble{aspect-ratio:1;border-radius:50%;position:relative;box-shadow:inset -5px -7px 0 #0002,inset 3px 4px 0 #fff7,0 3px 0 #08041d;transition:transform .12s,filter .12s}
-.bubble:after{content:"";position:absolute;width:25%;height:13%;border-radius:50%;background:#fff9;top:17%;left:23%;transform:rotate(-35deg)}
-.bubble:active{transform:scale(.88)}.bubble.selected{outline:3px solid white;outline-offset:2px;transform:scale(.92)}
-.c0{background:linear-gradient(145deg,#ff83b9,#ed287c)}.c1{background:linear-gradient(145deg,#7ef4ff,#13a9dc)}.c2{background:linear-gradient(145deg,#ffe98a,#ff9b28)}.c3{background:linear-gradient(145deg,#c9a0ff,#8050e8)}.c4{background:linear-gradient(145deg,#9bffb5,#20bd79)}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn{border-radius:14px;padding:13px 10px;font-weight:900;color:#24123d;background:linear-gradient(180deg,#fff17d,#ffbd42);box-shadow:0 4px 0 #a65c20}.btn.secondary{background:linear-gradient(180deg,#75f2ff,#2ebcde);box-shadow:0 4px 0 #16769a}.btn:disabled{opacity:.45;filter:grayscale(1)}
-.message{min-height:25px;text-align:center;color:#e7d9ff;font-size:13px;font-weight:700}
-.overlay{position:fixed;inset:0;background:#080418dd;display:grid;place-items:center;padding:20px;z-index:5}.modal{width:min(100%,420px);padding:28px 22px;border-radius:25px;text-align:center;background:linear-gradient(145deg,#39206c,#1b103d);border:1px solid #9471d1;box-shadow:0 20px 60px #0009}.modal h1{font-size:36px;margin:0 0 5px}.modal p{color:#e0d4f9;line-height:1.5}.modal .btn{width:100%;margin-top:10px;font-size:17px}.hidden{display:none!important}.hint{font-size:11px;color:#c1b2e2;text-align:center}
-@media(max-width:360px){#board{gap:4px}.app{padding:12px 10px}.stat strong{font-size:19px}}
-</style>
-</head>
-<body>
-<main class="app">
- <header class="top"><div><div class="brand">POP<span>✦</span>CRUSH</div><div class="tag">BUBBLE BLAST MANIA</div></div><div class="tag">ARCADE MODE</div></header>
- <section class="stats">
-  <div class="stat"><small>SCORE</small><strong id="score">0</strong></div>
-  <div class="stat"><small>MOVES</small><strong id="moves">25</strong></div>
-  <div class="stat"><small>BEST</small><strong id="best">0</strong></div>
- </section>
- <section class="gamebox"><div id="board" aria-label="Game board"></div></section>
- <div class="message" id="message">Tap a group of 2 or more matching bubbles to pop them!</div>
- <section class="controls">
-  <button class="btn secondary" id="rainbow">🌈 Rainbow Pop · 3</button>
-  <button class="btn" id="mega">💥 Mega Pop · 2</button>
- </section>
- <div class="hint">Match bigger groups for bigger points · Clear the board to earn a bonus</div>
-</main>
-<div class="overlay" id="welcome">
- <div class="modal"><div style="font-size:52px">🫧✨</div><h1>POP-CRUSH</h1><p>Ready for a bubble-blasting challenge? Pop matching clusters, trigger power-ups and chase your high score!</p><p><b>How to play:</b> Tap any connected group of 2+ same-colour bubbles. Bigger groups score more.</p><button class="btn" id="play">PLAY NOW</button></div>
-</div>
-<div class="overlay hidden" id="end">
- <div class="modal"><div style="font-size:48px">🏆</div><h1 id="endtitle">Great popping!</h1><p id="endtext"></p><button class="btn" id="again">PLAY AGAIN</button></div>
-</div>
+:root{--bg:#10152d;--panel:#1b2344;--panel2:#252f59;--ink:#f8faff;--muted:#aab6df;--gold:#ffd45e;--pink:#ff5ca8;--cyan:#54e5ff;--green:#66e6a5}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#39477e 0,#1b2344 38%,#10152d 75%);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;justify-content:center;padding:14px 12px 28px}.app{width:min(100%,520px)}header{text-align:center;margin:4px 0 14px}h1{font-size:clamp(30px,8vw,43px);line-height:1;margin:0;font-weight:1000;letter-spacing:-1.8px;text-shadow:0 4px 0 #6a347c,0 7px 18px #0008}h1 span{color:var(--gold)}.tag{color:var(--muted);font-size:12px;letter-spacing:2px;font-weight:800;margin-top:8px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.stat,.panel{background:linear-gradient(145deg,#252f59,#192142);border:1px solid #ffffff19;border-radius:15px;box-shadow:0 7px 18px #0003}.stat{text-align:center;padding:9px 4px}.stat small{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1px}.stat strong{font-size:21px;font-weight:900}.progress-wrap{height:8px;background:#080d20;border-radius:20px;overflow:hidden;margin:0 2px 12px}.progress{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#9b7bff,var(--pink));transition:width .3s}.board-panel{padding:10px;background:linear-gradient(145deg,#222c54,#151c39);border-radius:20px;border:1px solid #ffffff20;box-shadow:0 12px 28px #0005}.board-top{display:flex;align-items:center;justify-content:space-between;padding:0 3px 9px;color:var(--muted);font-size:12px;font-weight:800}.board{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;touch-action:manipulation}.bubble{aspect-ratio:1;border:0;border-radius:50%;position:relative;cursor:pointer;min-width:0;box-shadow:inset -4px -6px 8px #0004,inset 3px 3px 6px #fff8,0 3px 5px #0005;transition:transform .12s,filter .12s;animation:appear .18s ease-out}.bubble:before{content:"";position:absolute;width:31%;height:19%;border-radius:50%;background:#fff9;top:17%;left:20%;transform:rotate(-35deg)}.bubble:active{transform:scale(.86)}.bubble.red{background:radial-gradient(circle at 32% 25%,#ffb1bd,#ff3f72 55%,#b90f52)}.bubble.blue{background:radial-gradient(circle at 32% 25%,#a6f6ff,#25bde9 55%,#1262b7)}.bubble.green{background:radial-gradient(circle at 32% 25%,#c5ffd8,#39d88d 55%,#0a875e)}.bubble.yellow{background:radial-gradient(circle at 32% 25%,#fff5b1,#ffc83f 55%,#d47a12)}.bubble.purple{background:radial-gradient(circle at 32% 25%,#e8c4ff,#a66bfa 55%,#6334bb)}.bubble.rainbow{background:conic-gradient(#ff4b70,#ffce48,#4de49b,#40cfff,#a56cff,#ff4b70);box-shadow:0 0 13px #fff8,inset 0 0 8px #fff}.bubble.mega{background:radial-gradient(circle,#fff 0 12%,#ffe78b 14% 25%,#ff9c37 27% 55%,#e83d8c 70%);box-shadow:0 0 16px #ffba55}.bubble.empty{visibility:hidden;pointer-events:none}.bubble.pop{animation:pop .22s forwards}@keyframes appear{from{transform:scale(.4);opacity:.3}to{transform:scale(1);opacity:1}}@keyframes pop{to{transform:scale(1.5);opacity:0}}.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}.btn{border:0;border-radius:13px;padding:11px 8px;color:#111a36;font-weight:900;font-size:12px;background:linear-gradient(180deg,#ffe88d,#ffbf45);box-shadow:0 4px 0 #a66b20;cursor:pointer}.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #a66b20}.btn.secondary{background:linear-gradient(180deg,#a7f4ff,#52cde9);box-shadow:0 4px 0 #217caa}.btn.pink{background:linear-gradient(180deg,#ffb0d5,#ff69ae);box-shadow:0 4px 0 #a72e72}.btn:disabled{opacity:.45;filter:grayscale(.6);cursor:not-allowed}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px}.info{padding:12px 14px}.info h3{font-size:13px;margin:0 0 5px;color:var(--gold)}.info p{font-size:11px;line-height:1.45;color:var(--muted);margin:0}.message{text-align:center;min-height:24px;color:#fff1b2;font-size:13px;font-weight:800;padding:8px 2px}.overlay{position:fixed;inset:0;background:#080c1ddd;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}.overlay.show{display:flex}.modal{width:min(100%,360px);text-align:center;padding:24px 20px;background:linear-gradient(145deg,#303d70,#171f40);border:1px solid #ffffff30;border-radius:22px;box-shadow:0 18px 50px #0009}.modal h2{font-size:27px;margin:0 0 8px}.modal p{color:var(--muted);font-size:14px;line-height:1.5}.modal .btn{width:100%;margin-top:10px;font-size:14px}.sound{display:flex;justify-content:center;align-items:center;gap:7px;color:var(--muted);font-size:11px;margin-top:12px}.sound input{accent-color:#ffcf58}.footer{text-align:center;color:#7784b3;font-size:10px;margin-top:14px}
+</style></head>
+<body><main class="app"><header><h1>POP-<span>CRUSH</span></h1><div class="tag">BLAST MANIA ✦ POP • COMBO • WIN</div></header>
+<section class="stats"><div class="stat"><small>SCORE</small><strong id="score">0</strong></div><div class="stat"><small>LEVEL</small><strong id="level">1</strong></div><div class="stat"><small>🪙 COINS</small><strong id="coins">0</strong></div></section>
+<div class="progress-wrap"><div class="progress" id="progress"></div></div>
+<section class="board-panel"><div class="board-top"><span>POP GROUPS OF 3 OR MORE</span><span id="best">BEST: 0</span></div><div class="board" id="board" aria-label="Bubble game board"></div></section>
+<div class="message" id="message">Tap a group of matching bubbles to pop them!</div>
+<div class="controls"><button class="btn" id="shuffle">↻ SHUFFLE</button><button class="btn secondary" id="rainbow">🌈 RAINBOW · 30</button><button class="btn pink" id="mega">💥 MEGA · 50</button></div>
+<div class="bottom"><section class="panel info"><h3>🎯 YOUR MISSION</h3><p id="mission">Reach 500 points to clear level 1.</p></section><section class="panel info"><h3>🏆 YOUR RECORD</h3><p>Best score: <b id="record">0</b><br>Biggest combo: <b id="combo">0</b></p></section></div>
+<label class="sound"><input id="sound" type="checkbox" checked> Sound effects</label><div class="footer">POP-CRUSH: BLAST MANIA · A LITTLE POP, A LOT OF FUN</div></main>
+<div class="overlay" id="overlay"><div class="modal"><h2 id="modalTitle">Level complete!</h2><p id="modalText">Great popping!</p><button class="btn" id="modalBtn">CONTINUE</button></div></div>
 <script>
-const W=8,H=8,colors=5;let grid=[],score=0,moves=25,rainbows=3,megas=2,best=+(localStorage.pcBest||0),busy=false;
-const $=id=>document.getElementById(id),rand=()=>Math.floor(Math.random()*colors);
-function fresh(){grid=Array.from({length:H},()=>Array.from({length:W},rand));score=0;moves=25;rainbows=3;megas=2;busy=false;update();draw();$('message').textContent='Find a cluster of matching bubbles!';}
-function update(){$('score').textContent=score;$('moves').textContent=moves;$('best').textContent=best;$('rainbow').textContent=`🌈 Rainbow Pop · ${rainbows}`;$('mega').textContent=`💥 Mega Pop · ${megas}`;$('rainbow').disabled=rainbows<=0||busy;$('mega').disabled=megas<=0||busy;}
-function draw(){const b=$('board');b.innerHTML='';grid.forEach((row,r)=>row.forEach((v,c)=>{let el=document.createElement('button');el.className='bubble '+(v===null?'':'c'+v);el.setAttribute('aria-label',v===null?'Empty':`Colour ${v+1}`);el.disabled=v===null||busy;el.addEventListener('click',()=>tap(r,c));b.appendChild(el)}));}
-function group(r,c){let color=grid[r][c];if(color===null)return[];let stack=[[r,c]],seen=new Set([r*W+c]),out=[];while(stack.length){let [y,x]=stack.pop();out.push([y,x]);for(let [dy,dx] of [[1,0],[-1,0],[0,1],[0,-1]]){let ny=y+dy,nx=x+dx,k=ny*W+nx;if(ny>=0&&ny<H&&nx>=0&&nx<W&&!seen.has(k)&&grid[ny][nx]===color){seen.add(k);stack.push([ny,nx])}}}return out}
-function tap(r,c){if(busy)return;let g=group(r,c);if(g.length<2){$('message').textContent='Choose a group of at least 2 matching bubbles.';return}pop(g,`Nice! ${g.length} bubbles popped.`)}
-function pop(cells,msg){cells.forEach(([r,c])=>grid[r][c]=null);score+=cells.length*cells.length*10;moves--;settle();if(score>best){best=score;localStorage.pcBest=best}update();draw();$('message').textContent=msg;if(moves<=0||grid.every(row=>row.every(v=>v===null))){if(grid.every(row=>row.every(v=>v===null)))score+=500;setTimeout(finish,250)}}
-function settle(){for(let c=0;c<W;c++){let vals=[];for(let r=H-1;r>=0;r--)if(grid[r][c]!==null)vals.push(grid[r][c]);for(let r=H-1,i=0;r>=0;r--,i++)grid[r][c]=vals[i]??null}let keep=[];for(let c=0;c<W;c++)if(grid.some(row=>row[c]!==null))keep.push(grid.map(row=>row[c]));grid=Array.from({length:H},(_,r)=>Array.from({length:W},(_,c)=>keep[c]?.[r]??null))}
-$('rainbow').onclick=()=>{if(!rainbows||busy)return;let counts=Array(colors).fill(0);grid.flat().forEach(v=>{if(v!==null)counts[v]++});let target=counts.indexOf(Math.max(...counts));let cells=[];grid.forEach((row,r)=>row.forEach((v,c)=>{if(v===target)cells.push([r,c])}));rainbows--;pop(cells,'🌈 Rainbow Pop! The most common colour is gone!')};
-$('mega').onclick=()=>{if(!megas||busy)return;let r=Math.floor(Math.random()*H),c=Math.floor(Math.random()*W),cells=[];for(let y=Math.max(0,r-1);y<=Math.min(H-1,r+1);y++)for(let x=Math.max(0,c-1);x<=Math.min(W-1,c+1);x++)if(grid[y][x]!==null)cells.push([y,x]);megas--;pop(cells,'💥 Mega Pop! A 3×3 area blasted away!')};
-function finish(){$('endtitle').textContent=score>=best?'New high score!':'Game over!';$('endtext').textContent=`You scored ${score.toLocaleString()} points. Best score: ${best.toLocaleString()}.`; $('end').classList.remove('hidden')}
-$('play').onclick=()=>{$('welcome').classList.add('hidden');fresh()};$('again').onclick=()=>{$('end').classList.add('hidden');fresh()};$('best').textContent=best;draw();
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-</script>
-</body></html>
+(()=>{'use strict';const $=id=>document.getElementById(id);const COLORS=['red','blue','green','yellow','purple'];const SIZE=8;let board=[],score=0,level=1,coins=Number(localStorage.getItem('pc_coins')||0),best=Number(localStorage.getItem('pc_best')||0),biggest=Number(localStorage.getItem('pc_combo')||0),soundOn=true,locked=false,ctx=null;const target=()=>500+(level-1)*350;const rand=()=>COLORS[Math.floor(Math.random()*COLORS.length)];
+function tone(freq=520,dur=.08,type='sine'){if(!soundOn)return;try{ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();let o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.07,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+dur)}catch(e){}}
+function save(){localStorage.setItem('pc_coins',coins);localStorage.setItem('pc_best',best);localStorage.setItem('pc_combo',biggest)}function update(){ $('score').textContent=score.toLocaleString();$('level').textContent=level;$('coins').textContent=coins.toLocaleString();$('best').textContent='BEST: '+best.toLocaleString();$('record').textContent=best.toLocaleString();$('combo').textContent=biggest;$('progress').style.width=Math.min(100,score/target()*100)+'%';$('mission').textContent='Reach '+target().toLocaleString()+' points to clear level '+level+'.';$('rainbow').disabled=coins<30;$('mega').disabled=coins<50;save()}
+function makeBoard(){board=Array.from({length:SIZE},()=>Array.from({length:SIZE},rand));render()}
+function render(){const el=$('board');el.innerHTML='';board.forEach((row,r)=>row.forEach((v,c)=>{let b=document.createElement('button');b.className='bubble '+(v||'empty');b.setAttribute('aria-label',v?`${v} bubble`:'empty');b.disabled=!v||locked;b.addEventListener('click',()=>tap(r,c));el.appendChild(b)}));update()}
+function groupAt(r,c){let color=board[r]?.[c];if(!color)return[];if(color==='rainbow'||color==='mega'){let out=[];board.forEach((row,y)=>row.forEach((v,x)=>{if(v)out.push([y,x])}));return out}let seen=new Set(),stack=[[r,c]],out=[];while(stack.length){let [y,x]=stack.pop(),key=y+','+x;if(y<0||x<0||y>=SIZE||x>=SIZE||seen.has(key)||board[y][x]!==color)continue;seen.add(key);out.push([y,x]);stack.push([y+1,x],[y-1,x],[y,x+1],[y,x-1])}return out}
+function tap(r,c){if(locked||!board[r][c])return;let group=groupAt(r,c);if(group.length<3&&board[r][c]!=='rainbow'&&board[r][c]!=='mega'){msg('Find at least 3 connected bubbles of the same colour.');tone(180,.06,'triangle');return}pop(group)}
+function msg(t){$('message').textContent=t}
+function pop(group){locked=true;let nodes=[...$('board').children];group.forEach(([r,c])=>{let n=nodes[r*SIZE+c];if(n)n.classList.add('pop')});let n=group.length,earned=n*n*5+(n>=6?50:0);score+=earned;coins+=Math.max(1,Math.floor(n/3));biggest=Math.max(biggest,n);best=Math.max(best,score);tone(360+Math.min(n,12)*45,.16,'sine');msg('+'+earned+' points · '+n+' bubbles crushed!');setTimeout(()=>{group.forEach(([r,c])=>board[r][c]=null);collapse();locked=false;render();checkProgress()},220)}
+function collapse(){for(let c=0;c<SIZE;c++){let vals=[];for(let r=SIZE-1;r>=0;r--)if(board[r][c])vals.push(board[r][c]);for(let r=SIZE-1;r>=0;r--)board[r][c]=vals[SIZE-1-r]||null}for(let c=0;c<SIZE;c++)for(let r=0;r<SIZE;r++)if(!board[r][c])board[r][c]=rand()}
+function checkProgress(){if(score>=target()){level++;coins+=25;update();showModal('LEVEL UP! 🎉','You cleared the level and earned 25 bonus coins. Ready for a tougher board?','NEXT LEVEL',()=>{score=0;makeBoard();msg('Level '+level+' — let’s crush it!')})}else if(!hasMove()){msg('No groups available. Shuffle to keep playing!')}}
+function hasMove(){for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(board[r][c]&&groupAt(r,c).length>=3)return true;return false}
+function showModal(title,text,button,fn){$('modalTitle').textContent=title;$('modalText').textContent=text;$('modalBtn').textContent=button;$('overlay').classList.add('show');$('modalBtn').onclick=()=>{$('overlay').classList.remove('show');fn()}}
+$('shuffle').onclick=()=>{if(locked)return;makeBoard();msg('Fresh board! Find your next big combo.');tone(420,.1)};
+$('rainbow').onclick=()=>{if(coins<30||locked)return;coins-=30;let r=Math.floor(Math.random()*SIZE),c=Math.floor(Math.random()*SIZE);board[r][c]='rainbow';render();msg('Rainbow bubble added! Tap it to clear the board.');tone(760,.18,'triangle')};
+$('mega').onclick=()=>{if(coins<50||locked)return;coins-=50;let r=Math.floor(Math.random()*SIZE),c=Math.floor(Math.random()*SIZE);board[r][c]='mega';render();msg('Mega bubble added! Tap it for a massive blast.');tone(220,.2,'sawtooth')};
+$('sound').onchange=e=>{soundOn=e.target.checked;if(soundOn)tone()};makeBoard();update();
+})();
+</script></body></html>
